@@ -6,7 +6,15 @@ var bodyParser = require('body-parser');
 // Inicializar Variables
 var app = express();
 
-// Body Parsser
+// CORS
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "POST , GET, PUT, DELETE, OPTIONS");
+    next();
+});
+
+// Body Parser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -20,10 +28,11 @@ var busquedaRoutes = require('./routes/busqueda');
 var uploadRoutes = require('./routes/upload');
 var imagenesRoutes = require('./routes/imagenes');
 //Db Conexion
-mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) => {
+mongoose.connect('mongodb://localhost:27017/hospitalDB', { useNewUrlParser: true }, (err, res) => {
     if (err) throw err;
     console.log('Base de datos Online');
 });
+mongoose.set('useCreateIndex', true);
 
 // Rutas
 app.use('/usuario', usuarioRoutes);

@@ -7,7 +7,7 @@ var app = express();
 //Modelo
 var Hospital = require('../models/hospital');
 var Medico = require('../models/medico');
-var Usuario = require('../models/usuario')
+var Usuario = require('../models/usuario');
 
 
 // Rutas
@@ -129,7 +129,7 @@ function buscarUsuarios(busqueda, regex) {
 
     return new Promise((resolve, reject) => {
 
-        Usuario.find({}, 'nombre email role')
+        Usuario.find({}, 'nombre img email role google')
             .or([{ 'nombre': regex }, { 'email': regex }])
             .exec((err, usuario) => {
                 if (err) {

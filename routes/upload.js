@@ -22,7 +22,7 @@ app.put('/:tabla/:id', (req, res, next) => {
     //Verificar tabla valida
     var tablasValidas = ["hospitales", "medicos", "usuarios"];
     if (tablasValidas.indexOf(tabla) < 0) {
-        return res.status(400), json({
+        return res.status(200).json({
             ok: false,
             mensaje: 'Tipo de coleccion no es valida'
         });
@@ -52,18 +52,13 @@ app.put('/:tabla/:id', (req, res, next) => {
     }
 
     //Nombre de archivo Personalizado
-    var nombreArchivo = `${id}-${new Date().getMilliseconds()}.${extensionArchivo}`;
+    var nombreArchivo = `${ id }-${new Date().getMilliseconds()}.${extensionArchivo}`;
 
     //Mover el archivo del temporal a un path
     var path = `./uploads/${ tabla }/${ nombreArchivo }`;
 
     archivo.mv(path, err => {
-        if (err) {
-            return req.status(500).json({
-                ok: false,
-                err: err
-            });
-        }
+
 
         subirPorTipo(tabla, id, nombreArchivo, res);
 
@@ -82,15 +77,34 @@ function subirPorTipo(tabla, id, nombreArchivo, res) {
 
     if (tabla === 'usuarios') {
         Usuario.findById(id, (err, usuario) => {
+
+            if (!usuario) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'usuario no existe'
+                });
+            }
+
+
             var pathViejo = './uploads/usuarios/' + usuario.img;
 
             // Si existe, elimina la imagen anterior
             if (fs.existsSync(pathViejo)) {
-                fs.unlink(pathViejo);
+                fs.unlink(pathViejo, (err) => {
+                    if (err) throw err;
+                });
             }
 
             usuario.img = nombreArchivo;
             usuario.save((err, usuarioActualizado) => {
+
+                if (err) {
+                    return req.status(500).json({
+                        ok: false,
+                        err: err
+                    });
+                }
+
                 return res.status(200).json({
                     ok: true,
                     mensaje: 'Imagen de usuario Actualizada',
@@ -102,11 +116,21 @@ function subirPorTipo(tabla, id, nombreArchivo, res) {
     }
     if (tabla === 'medicos') {
         Medico.findById(id, (err, medico) => {
+
+            if (!medico) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'medico no existe'
+                });
+            }
+
             var pathViejo = './uploads/medicos/' + medico.img;
 
             // Si existe, elimina la imagen anterior
             if (fs.existsSync(pathViejo)) {
-                fs.unlink(pathViejo);
+                fs.unlink(pathViejo, (err) => {
+                    if (err) throw err;
+                });
             }
 
             medico.img = nombreArchivo;
@@ -123,11 +147,21 @@ function subirPorTipo(tabla, id, nombreArchivo, res) {
 
 
         Hospital.findById(id, (err, hospital) => {
+
+            if (!hospital) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'hospital no existe'
+                });
+            }
+
             var pathViejo = './uploads/hospitales/' + hospital.img;
 
             // Si existe, elimina la imagen anterior
             if (fs.existsSync(pathViejo)) {
-                fs.unlink(pathViejo);
+                fs.unlink(pathViejo, (err) => {
+                    if (err) throw err;
+                });
             }
 
             hospital.img = nombreArchivo;
