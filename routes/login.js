@@ -22,7 +22,7 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 // Autenticacion Google
 // ==========================================
 
-app.get('/renuevatoken', mdAutenticacion.verificaToken, (req, res => {
+app.get('/renuevatoken', mdAutenticacion.verificaToken, (req, res) => {
 
     var token = jwt.sign({ usuario: req.usuario }, SEED, { expiresIn: 14000 }); // 4 horas
 
@@ -31,7 +31,7 @@ app.get('/renuevatoken', mdAutenticacion.verificaToken, (req, res => {
         token: token
     });
 
-}));
+});
 
 
 // ==========================================
